@@ -2,17 +2,20 @@ package com.brunorodrigues.portfolio.github
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.brunorodrigues.portfolio.github.ui.main.MainFragment
+import android.os.CountDownTimer
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.main_activity)
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, MainFragment.newInstance())
-                    .commitNow()
+
+        val timer = object : CountDownTimer(3000, 1000) {
+            override fun onFinish() {
+                startActivity(RepositoryActivity.newIntent(this@MainActivity))
+            }
+
+            override fun onTick(millisUntilFinished: Long) {  }
         }
+        timer.start()
     }
 }
