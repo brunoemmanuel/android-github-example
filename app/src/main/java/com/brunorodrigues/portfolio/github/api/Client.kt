@@ -24,6 +24,4 @@ class Client() {
     suspend fun getRepositories(page: Int) = service.getRepositories(page)
 
     suspend fun getPullRequests(userName: String, repositoryName: String, page: Int) = service.getPullRequests(userName, repositoryName, page)
-
-    suspend fun getUser(name: String) = service.getUser(name)
 }

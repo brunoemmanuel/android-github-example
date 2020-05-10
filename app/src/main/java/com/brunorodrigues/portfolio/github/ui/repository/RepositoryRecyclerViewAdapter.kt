@@ -14,7 +14,7 @@ import com.squareup.picasso.Picasso
 class RepositoryRecyclerViewAdapter(context: Context?) : RecyclerView.Adapter<RepositoryRecyclerViewAdapter.ViewHolder>() {
     var items = ArrayList<Repository>()
     private var inflater: LayoutInflater = LayoutInflater.from(context)
-    lateinit var click: (Int) -> () -> Unit
+    lateinit var click: (Int) -> Unit
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = inflater.inflate(R.layout.repository_card_item, parent, false)
@@ -42,7 +42,7 @@ class RepositoryRecyclerViewAdapter(context: Context?) : RecyclerView.Adapter<Re
         }
     }
 
-    fun setItemClick(click: (Int) -> () -> Unit) {
+    fun setItemClick(click: (Int) -> Unit) {
         this.click = click
     }
 

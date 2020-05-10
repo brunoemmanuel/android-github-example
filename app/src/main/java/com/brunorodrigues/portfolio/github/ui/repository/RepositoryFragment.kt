@@ -1,6 +1,7 @@
 package com.brunorodrigues.portfolio.github.ui.repository
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +26,6 @@ class RepositoryFragment : BaseFragment(RepositoryFragment::class.toString()) {
     private lateinit var adapter: RepositoryRecyclerViewAdapter
     private var page: Int = 1
     private var loading: Boolean = false
-    private val itemClick = { position: Int -> { onItemClick(position) } }
     private lateinit var progressBarCenter: ProgressBar
     private lateinit var progressBarBottom: ProgressBar
 
@@ -65,7 +65,9 @@ class RepositoryFragment : BaseFragment(RepositoryFragment::class.toString()) {
             })
 
             adapter = RepositoryRecyclerViewAdapter(context)
-            adapter.setItemClick(itemClick)
+            adapter.setItemClick {
+                Log.d("setItemClick", it.toString());
+            }
             recyclerView.adapter = adapter
 
             viewModel = ViewModelProvider(this, DefaultViewModelFactory()).get(RepositoryViewModel::class.java)
@@ -90,9 +92,5 @@ class RepositoryFragment : BaseFragment(RepositoryFragment::class.toString()) {
     override fun onDestroy() {
         viewModel.destroy()
         super.onDestroy()
-    }
-
-    fun onItemClick(position: Int) {
-
     }
 }

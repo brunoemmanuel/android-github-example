@@ -18,9 +18,4 @@ interface Service {
                                 @Path("repo") repositoryName: String,
                                 @Query("page") page: Int
     ): ArrayList<PullRequest>
-
-    @GET("/users/{username}")
-    suspend fun getUser(
-        @Path("username") name: String
-    ): User
 }
