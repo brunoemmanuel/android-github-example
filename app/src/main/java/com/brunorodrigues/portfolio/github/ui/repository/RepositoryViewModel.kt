@@ -30,9 +30,9 @@ class RepositoryViewModel(private var client: Client) : ViewModel(), CoroutineSc
             } catch (throwable: Throwable) {
                 error.value = throwable
             }
-
         }
     }
+
     fun destroy() {
         job.cancel()
     }

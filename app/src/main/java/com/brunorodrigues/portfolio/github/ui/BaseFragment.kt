@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 open class BaseFragment(private val resourceName: String) : Fragment(), IdlingResource {
     private val isIdle = AtomicBoolean(true)
 
-    // written from main thread, read from any thread.
     @Volatile private var resourceCallback: IdlingResource.ResourceCallback? = null
 
     override fun getName(): String = resourceName

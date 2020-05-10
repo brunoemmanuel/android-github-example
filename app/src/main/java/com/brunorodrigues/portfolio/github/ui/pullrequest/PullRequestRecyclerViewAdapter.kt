@@ -1,4 +1,4 @@
-package com.brunorodrigues.portfolio.github.ui.repository
+package com.brunorodrigues.portfolio.github.ui.pullrequest
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,16 +8,17 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.brunorodrigues.portfolio.github.R
-import com.brunorodrigues.portfolio.github.data.Repository
+import com.brunorodrigues.portfolio.github.data.PullRequest
 import com.squareup.picasso.Picasso
+import java.text.SimpleDateFormat
 
-class RepositoryRecyclerViewAdapter(context: Context?) : RecyclerView.Adapter<RepositoryRecyclerViewAdapter.ViewHolder>() {
-    var items = ArrayList<Repository>()
+class PullRequestRecyclerViewAdapter(context: Context?) : RecyclerView.Adapter<PullRequestRecyclerViewAdapter.ViewHolder>() {
+    var items = ArrayList<PullRequest>()
     private var inflater: LayoutInflater = LayoutInflater.from(context)
     lateinit var click: (Int) -> Unit
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = inflater.inflate(R.layout.repository_card_item, parent, false)
+        val view = inflater.inflate(R.layout.pull_request_card_item, parent, false)
         return ViewHolder(view).listen { pos, type ->
             if(click != null) click(pos)
         }
@@ -28,19 +29,32 @@ class RepositoryRecyclerViewAdapter(context: Context?) : RecyclerView.Adapter<Re
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val repository = items[position]
+        val pullRequest = items[position]
 
-        if(repository != null) {
-            val user = repository.owner
+        if(pullRequest != null) {
+            val user = pullRequest.user
             if(user != null) {
                 Picasso.get().load(user.avatarUrl).into(holder.userImage)
                 holder.userName.text = user.login
             }
 
-            holder.repositoryName.text = repository.name
-            holder.repositoryDescription.text = repository.description
-            holder.forkCount.text = repository.forksCount.toString()
-            holder.starCount.text = repository.stargazersCount.toString()
+            holder.pullRequestTitle.text = pullRequest.title
+
+            if(pullRequest.body != "") {
+                holder.pullRequestBody.text = pullRequest.body
+                holder.pullRequestBody.visibility = View.VISIBLE
+            } else {
+                holder.pullRequestBody.text = ""
+                holder.pullRequestBody.visibility = View.GONE
+            }
+
+            if(pullRequest.createdAt != null) {
+                val df = SimpleDateFormat("dd/MM/yyyy")
+                val releasedText = df.format(pullRequest.createdAt)
+                holder.createdAt.text = releasedText
+            } else {
+                holder.createdAt.text = ""
+            }
         }
     }
 
@@ -49,10 +63,9 @@ class RepositoryRecyclerViewAdapter(context: Context?) : RecyclerView.Adapter<Re
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val repositoryName: TextView = itemView.findViewById(R.id.repositoryName)
-        val repositoryDescription: TextView = itemView.findViewById(R.id.repositoryDescription)
-        val forkCount: TextView = itemView.findViewById(R.id.forkCount)
-        val starCount: TextView = itemView.findViewById(R.id.starCount)
+        val pullRequestTitle: TextView = itemView.findViewById(R.id.pullRequestTitle)
+        val pullRequestBody: TextView = itemView.findViewById(R.id.pullRequestBody)
+        val createdAt: TextView = itemView.findViewById(R.id.createdAt)
         val userName: TextView = itemView.findViewById(R.id.userName)
         val userImage: ImageView = itemView.findViewById(R.id.userImage)
 

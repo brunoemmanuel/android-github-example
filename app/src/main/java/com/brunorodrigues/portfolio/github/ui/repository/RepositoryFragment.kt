@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.brunorodrigues.portfolio.github.PullRequestActivity
 import com.brunorodrigues.portfolio.github.R
 import com.brunorodrigues.portfolio.github.factory.DefaultViewModelFactory
 import com.brunorodrigues.portfolio.github.ui.BaseFragment
@@ -66,7 +67,12 @@ class RepositoryFragment : BaseFragment(RepositoryFragment::class.toString()) {
 
             adapter = RepositoryRecyclerViewAdapter(context)
             adapter.setItemClick {
-                Log.d("setItemClick", it.toString());
+                val intent = PullRequestActivity.newIntent(context)
+                val userName = viewModel.repositories.value?.get(it)?.owner?.login
+                val repositoryName = viewModel.repositories.value?.get(it)?.name
+                intent.putExtra(PullRequestActivity.USER_NAME_KEY, userName)
+                intent.putExtra(PullRequestActivity.REPOSITORY_NAME_KEY, repositoryName)
+                startActivity(intent)
             }
             recyclerView.adapter = adapter
 
@@ -77,10 +83,10 @@ class RepositoryFragment : BaseFragment(RepositoryFragment::class.toString()) {
                    adapter.notifyDataSetChanged()
                    page++
                    loading = false
-
-                   if(progressBarBottom.visibility != View.GONE) progressBarBottom.visibility = View.GONE
-                   if(progressBarCenter.visibility != View.GONE) progressBarCenter.visibility = View.GONE
                }
+                if(progressBarBottom.visibility != View.GONE) progressBarBottom.visibility = View.GONE
+                if(progressBarCenter.visibility != View.GONE) progressBarCenter.visibility = View.GONE
+                setIdle(true)
             })
             viewModel.error.observe(viewLifecycleOwner, Observer {
                 Toast.makeText(context, R.string.error_message_toast, Toast.LENGTH_LONG).show()
