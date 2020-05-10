@@ -8,7 +8,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface Service {
-    @GET("/search/repositories?q=language:Java&sort=stars")
+    @GET("/searchs/repositories?q=language:Java&sort=stars")
     suspend fun getRepositories(
         @Query("page") page: Int
     ): RepositoriesResponse
