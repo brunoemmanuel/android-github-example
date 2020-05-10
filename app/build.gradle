@@ -6,6 +6,11 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     defaultConfig {
         applicationId "com.brunorodrigues.portfolio.github"
         minSdkVersion 21
@@ -17,9 +22,13 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField 'String', 'BASE_API_URL', '"https://api.github.com"'
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField 'String', 'BASE_API_URL', '"https://api.github.com"'
         }
     }
 

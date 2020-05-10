@@ -4,7 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.test.espresso.IdlingResource
 import java.util.concurrent.atomic.AtomicBoolean
 
-open class BaseFragment(val resourceName: String) : Fragment(), IdlingResource {
+open class BaseFragment(private val resourceName: String) : Fragment(), IdlingResource {
     private val isIdle = AtomicBoolean(true)
 
     // written from main thread, read from any thread.
@@ -18,7 +18,7 @@ open class BaseFragment(val resourceName: String) : Fragment(), IdlingResource {
         this.resourceCallback = resourceCallback
     }
 
-    fun setIdle(isIdleNow: Boolean) {
+    open fun setIdle(isIdleNow: Boolean) {
         if (isIdleNow == isIdle.get()) return
         isIdle.set(isIdleNow)
         if (isIdleNow) {

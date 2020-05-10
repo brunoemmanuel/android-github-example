@@ -12,6 +12,7 @@ class MainActivity : AppCompatActivity() {
         val timer = object : CountDownTimer(3000, 1000) {
             override fun onFinish() {
                 startActivity(RepositoryActivity.newIntent(this@MainActivity))
+                finish()
             }
 
             override fun onTick(millisUntilFinished: Long) {  }
