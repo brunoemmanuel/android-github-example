@@ -5,7 +5,7 @@ import androidx.test.espresso.IdlingResource
 import java.util.concurrent.atomic.AtomicBoolean
 
 open class BaseFragment(private val resourceName: String) : Fragment(), IdlingResource {
-    private val isIdle = AtomicBoolean(true)
+    private val isIdle = AtomicBoolean(false)
 
     @Volatile private var resourceCallback: IdlingResource.ResourceCallback? = null
 

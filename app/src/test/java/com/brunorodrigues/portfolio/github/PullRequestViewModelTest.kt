@@ -46,6 +46,7 @@ class PullRequestViewModelTest {
 
     private lateinit var lifeCycle: Lifecycle
     private lateinit var viewModel: PullRequestViewModel
+    private val items = ArrayList<PullRequest>(listOf(PullRequest(user = User(), createdAt = Date()), PullRequest(user = User(), createdAt = Date())))
 
     @Before
     fun setUp() {
@@ -66,9 +67,6 @@ class PullRequestViewModelTest {
 
     @Test
     fun testApiLoadSuccess() = runBlockingTest {
-        val items = ArrayList<PullRequest>()
-        items.add(PullRequest(user = User(), createdAt = Date()))
-
         `when`( client.getPullRequests("", "", 1) ).thenReturn(items)
         viewModel.loadPullRequests("", "", 1)
         verify(observerPullRequests).onChanged(items)

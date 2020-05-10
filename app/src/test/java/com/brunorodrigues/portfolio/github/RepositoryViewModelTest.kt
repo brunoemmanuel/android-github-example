@@ -27,6 +27,8 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
 import retrofit2.HttpException
+import java.util.*
+import kotlin.collections.ArrayList
 
 class RepositoryViewModelTest {
     @get:Rule
@@ -45,6 +47,7 @@ class RepositoryViewModelTest {
 
     private lateinit var lifeCycle: Lifecycle
     private lateinit var viewModel: RepositoryViewModel
+    private val items = ArrayList<Repository>(listOf(Repository(owner = User()), Repository(owner = User()), Repository(owner = User())))
 
     @Before
     fun setUp() {
@@ -65,8 +68,6 @@ class RepositoryViewModelTest {
 
     @Test
     fun testApiLoadSuccess() = runBlockingTest {
-        val items = ArrayList<Repository>()
-        items.add(Repository(owner = User()))
         val response = RepositoriesResponse(items = items)
 
         `when`( client.getRepositories(1) ).thenReturn(response)
