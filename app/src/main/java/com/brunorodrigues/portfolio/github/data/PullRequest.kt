@@ -9,5 +9,5 @@ data class PullRequest(
     val body: String = "",
     val user: User?,
     @SerializedName("html_url") val htmlUrl: String = "",
-    @SerializedName("created_at") val createdAt: Date
+    @SerializedName("created_at") val createdAt: Date?
 )
