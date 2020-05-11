@@ -24,7 +24,7 @@ class PullRequestViewModel(private var client: Client) : ViewModel(), CoroutineS
                 val items = client.getPullRequests(userName, repositoryName, page)
                 var arr = pullRequests.value
                 if(arr == null) arr = ArrayList()
-                arr.addAll(items)
+                if(items != null) arr.addAll(items)
                 pullRequests.value = arr
             } catch (throwable: Throwable) {
                 error.value = throwable

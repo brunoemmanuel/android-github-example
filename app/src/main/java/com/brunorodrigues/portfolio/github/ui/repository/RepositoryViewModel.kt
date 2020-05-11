@@ -25,7 +25,7 @@ class RepositoryViewModel(private var client: Client) : ViewModel(), CoroutineSc
                 val response = client.getRepositories(page)
                 var arr = repositories.value
                 if(arr == null) arr = ArrayList()
-                arr.addAll(response.items)
+                if(response != null) arr.addAll(response.items)
                 repositories.value = arr
             } catch (throwable: Throwable) {
                 error.value = throwable

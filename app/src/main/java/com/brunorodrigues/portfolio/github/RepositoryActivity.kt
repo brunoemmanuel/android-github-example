@@ -15,9 +15,9 @@ import kotlin.coroutines.CoroutineContext
 
 class RepositoryActivity : AppCompatActivity() {
 
-
-
     companion object {
+        const val IS_TEST: String = "__is_test_key__"
+
         fun newIntent(context: Context) : Intent {
             return Intent(context, RepositoryActivity::class.java)
         }
@@ -27,8 +27,9 @@ class RepositoryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.repository_activity)
         if (savedInstanceState == null) {
+            val bundle = intent.extras ?: Bundle()
             supportFragmentManager.beginTransaction()
-                .replace(R.id.container, RepositoryFragment.newInstance(), RepositoryFragment::class.toString())
+                .replace(R.id.container, RepositoryFragment.newInstance(bundle), RepositoryFragment::class.toString())
                 .commitNow()
         }
     }

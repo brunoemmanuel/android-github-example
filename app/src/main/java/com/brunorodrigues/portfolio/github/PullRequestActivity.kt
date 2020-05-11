@@ -10,6 +10,7 @@ import com.brunorodrigues.portfolio.github.ui.pullrequest.PullRequestFragment
 class PullRequestActivity : AppCompatActivity() {
 
     companion object {
+        const val IS_TEST: String = "__is_test_key__"
         const val USER_NAME_KEY: String = "__user_name_key__"
         const val REPOSITORY_NAME_KEY = "__repository_name_key__"
         

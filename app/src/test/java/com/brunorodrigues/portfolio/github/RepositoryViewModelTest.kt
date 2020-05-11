@@ -20,13 +20,15 @@ import org.junit.Assert.assertTrue
 import com.brunorodrigues.portfolio.github.api.Client
 import com.brunorodrigues.portfolio.github.data.RepositoriesResponse
 import com.brunorodrigues.portfolio.github.data.Repository
-import com.brunorodrigues.portfolio.github.data.User
 import com.brunorodrigues.portfolio.github.ui.repository.RepositoryViewModel
+import com.google.gson.Gson
+import com.google.gson.stream.JsonReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
 import retrofit2.HttpException
+import java.io.InputStreamReader
 import kotlin.collections.ArrayList
 
 class RepositoryViewModelTest {
@@ -46,7 +48,13 @@ class RepositoryViewModelTest {
 
     private lateinit var lifeCycle: Lifecycle
     private lateinit var viewModel: RepositoryViewModel
-    private val items = ArrayList<Repository>(listOf(Repository(owner = User()), Repository(owner = User()), Repository(owner = User())))
+    private var response: RepositoriesResponse
+
+    init {
+        val inputStream = javaClass.classLoader?.getResourceAsStream("mock_repository_response.json")
+        val reader = JsonReader(InputStreamReader(inputStream))
+        response = Gson().fromJson(reader, RepositoriesResponse::class.java)
+    }
 
     @Before
     fun setUp() {
@@ -67,8 +75,6 @@ class RepositoryViewModelTest {
 
     @Test
     fun testApiLoadSuccess() = runBlockingTest {
-        val response = RepositoriesResponse(items = items)
-
         `when`( client.getRepositories(1) ).thenReturn(response)
         viewModel.loadRepositories(1)
         verify(observerRepository).onChanged(response.items)

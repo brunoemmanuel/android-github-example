@@ -19,6 +19,7 @@ import com.brunorodrigues.portfolio.github.PullRequestActivity
 import com.brunorodrigues.portfolio.github.R
 import com.brunorodrigues.portfolio.github.factory.DefaultViewModelFactory
 import com.brunorodrigues.portfolio.github.ui.BaseFragment
+import org.jetbrains.annotations.TestOnly
 
 class PullRequestFragment : BaseFragment(PullRequestFragment::class.toString()) {
 
@@ -87,6 +88,21 @@ class PullRequestFragment : BaseFragment(PullRequestFragment::class.toString()) 
             recyclerView.adapter = adapter
 
             viewModel = ViewModelProvider(this, DefaultViewModelFactory()).get(PullRequestViewModel::class.java)
+
+            val bundle = arguments
+            if(bundle != null) {
+                userName = bundle.getString(PullRequestActivity.USER_NAME_KEY, "")
+                repositoryName = bundle.getString(PullRequestActivity.REPOSITORY_NAME_KEY, "")
+                val isTest = bundle.getBoolean(PullRequestActivity.IS_TEST, false)
+
+                (activity as AppCompatActivity).supportActionBar?.title = repositoryName
+                if(!isTest) initializeViewModel()
+            }
+        }
+    }
+
+    private fun initializeViewModel() {
+        activity?.runOnUiThread(Runnable {
             viewModel.pullRequests.observe(viewLifecycleOwner, Observer {
                 if(it.size > 0) {
                     adapter.items = it
@@ -106,19 +122,18 @@ class PullRequestFragment : BaseFragment(PullRequestFragment::class.toString()) 
                 Toast.makeText(context, R.string.error_message_toast, Toast.LENGTH_LONG).show()
             })
 
-            val bundle = arguments
-            if(bundle != null) {
-                userName = bundle.getString(PullRequestActivity.USER_NAME_KEY, "")
-                repositoryName = bundle.getString(PullRequestActivity.REPOSITORY_NAME_KEY, "")
-
-                (activity as AppCompatActivity).supportActionBar?.title = repositoryName
-                viewModel.loadPullRequests(userName, repositoryName, page)
-            }
-        }
+            viewModel.loadPullRequests(userName, repositoryName, page)
+        })
     }
 
     override fun onDestroy() {
         viewModel.destroy()
         super.onDestroy()
+    }
+
+    @TestOnly
+    fun setViewModel(viewModel: PullRequestViewModel) {
+        this.viewModel = viewModel
+        initializeViewModel()
     }
 }

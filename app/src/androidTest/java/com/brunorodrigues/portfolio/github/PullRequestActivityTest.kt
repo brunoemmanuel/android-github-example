@@ -22,49 +22,85 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 
 import org.hamcrest.Matchers.greaterThan
 
+import org.mockito.Mockito.`when`
+
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.brunorodrigues.portfolio.github.api.Client
+import com.brunorodrigues.portfolio.github.data.PullRequest
 import com.brunorodrigues.portfolio.github.ui.pullrequest.PullRequestFragment
 import com.brunorodrigues.portfolio.github.ui.pullrequest.PullRequestRecyclerViewAdapter
+import com.brunorodrigues.portfolio.github.ui.pullrequest.PullRequestViewModel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
+import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.Matchers.allOf
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
+import java.io.InputStreamReader
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.collections.ArrayList
 
 @RunWith(AndroidJUnit4::class)
 class PullRequestActivityTest {
     @get:Rule
     val rule = ActivityTestRule(PullRequestActivity::class.java, true, false)
 
-    private lateinit var idlingResource: IdlingResource
+    @Mock
+    lateinit var client: Client
+
+    private var fragment: PullRequestFragment? = null
+    private var viewModel: PullRequestViewModel? = null
+    private var response: ArrayList<PullRequest>
+
+    init {
+        val inputStream = javaClass.classLoader?.getResourceAsStream("mock_pull_request_response.json")
+        val reader = JsonReader(InputStreamReader(inputStream))
+        val myType = object : TypeToken<ArrayList<PullRequest>>() {}.type
+        response = Gson().fromJson(reader, myType)
+    }
 
     @Before
     fun setUp()  {
+        MockitoAnnotations.initMocks(this)
         Intents.init()
         val intent = Intent()
-            .putExtra(PullRequestActivity.USER_NAME_KEY, "elastic")
-            .putExtra(PullRequestActivity.REPOSITORY_NAME_KEY, "elasticsearch")
+            .putExtra(PullRequestActivity.USER_NAME_KEY, "")
+            .putExtra(PullRequestActivity.REPOSITORY_NAME_KEY, "")
+            .putExtra(RepositoryActivity.IS_TEST, true)
         rule.launchActivity(Intent(intent))
-        idlingResource = rule.activity.supportFragmentManager.findFragmentByTag(PullRequestFragment::class.toString()) as IdlingResource
-        IdlingRegistry.getInstance().register(idlingResource)
+        fragment = rule.activity.supportFragmentManager.findFragmentByTag(PullRequestFragment::class.toString()) as PullRequestFragment
+        IdlingRegistry.getInstance().register(fragment as IdlingResource)
     }
 
     @Test
-    fun testHasData() {
+    fun testHasData() = runBlockingTest {
+        `when`(client.getPullRequests("", "",1)).thenReturn(response)
+        viewModel = PullRequestViewModel(client)
+        fragment?.setViewModel(viewModel!!)
+
         onView(withId(R.id.recyclerViewPullRequests)).check(ViewAssertion { view, noViewFoundException ->
-            val viewById = rule.activity.requireViewById<RecyclerView>(R.id.recyclerViewPullRequests)
+            val viewById = rule.activity.findViewById<RecyclerView>(R.id.recyclerViewPullRequests)
             val adapter = viewById.adapter as PullRequestRecyclerViewAdapter
             assertThat(adapter.itemCount, greaterThan(0))
         })
     }
 
     @Test
-    fun testInfinityScroll() {
+    fun testInfinityScroll() = runBlockingTest {
+        `when`(client.getPullRequests("", "",1)).thenReturn(response)
+        `when`(client.getPullRequests("", "",2)).thenReturn(response)
+        viewModel = PullRequestViewModel(client)
+        fragment?.setViewModel(viewModel!!)
+
         val adapter = AtomicReference<PullRequestRecyclerViewAdapter>()
         onView(withId(R.id.recyclerViewPullRequests)).check(ViewAssertion { view, noViewFoundException ->
-            val viewById = rule.activity.requireViewById<RecyclerView>(R.id.recyclerViewPullRequests)
+            val viewById = rule.activity.findViewById<RecyclerView>(R.id.recyclerViewPullRequests)
             val temp = viewById.adapter as PullRequestRecyclerViewAdapter
             adapter.set(temp)
         })
@@ -77,10 +113,14 @@ class PullRequestActivityTest {
     }
 
     @Test
-    fun testNavigateToBrowser() {
+    fun testNavigateToBrowser() = runBlockingTest {
+        `when`(client.getPullRequests("", "",1)).thenReturn(response)
+        viewModel = PullRequestViewModel(client)
+        fragment?.setViewModel(viewModel!!)
+
         val adapter = AtomicReference<PullRequestRecyclerViewAdapter>()
         onView(withId(R.id.recyclerViewPullRequests)).check(ViewAssertion { view, noViewFoundException ->
-            val viewById = rule.activity.requireViewById<RecyclerView>(R.id.recyclerViewPullRequests)
+            val viewById = rule.activity.findViewById<RecyclerView>(R.id.recyclerViewPullRequests)
             val temp = viewById.adapter as PullRequestRecyclerViewAdapter
             adapter.set(temp)
         })
@@ -97,7 +137,9 @@ class PullRequestActivityTest {
 
     @After
     fun tearDown() {
-        IdlingRegistry.getInstance().unregister(idlingResource)
+        IdlingRegistry.getInstance().unregister(fragment as IdlingResource)
         Intents.release()
+        fragment = null
+        viewModel = null
     }
 }

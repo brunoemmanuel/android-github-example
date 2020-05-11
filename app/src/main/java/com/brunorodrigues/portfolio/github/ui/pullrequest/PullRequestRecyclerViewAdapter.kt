@@ -33,7 +33,7 @@ class PullRequestRecyclerViewAdapter(context: Context?) : RecyclerView.Adapter<P
 
         if(pullRequest != null) {
             val user = pullRequest.user
-            if(user != null) {
+            if(user != null && user.avatarUrl != "") {
                 Picasso.get().load(user.avatarUrl).into(holder.userImage)
                 holder.userName.text = user.login
             }

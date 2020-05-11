@@ -14,13 +14,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.brunorodrigues.portfolio.github.PullRequestActivity
 import com.brunorodrigues.portfolio.github.R
+import com.brunorodrigues.portfolio.github.RepositoryActivity
 import com.brunorodrigues.portfolio.github.factory.DefaultViewModelFactory
 import com.brunorodrigues.portfolio.github.ui.BaseFragment
+import org.jetbrains.annotations.TestOnly
 
 class RepositoryFragment : BaseFragment(RepositoryFragment::class.toString()) {
 
     companion object {
-        fun newInstance() = RepositoryFragment()
+        fun newInstance(bundle: Bundle): RepositoryFragment {
+            val fragment = RepositoryFragment()
+            fragment.arguments = bundle
+            return fragment
+        }
     }
 
     private lateinit var viewModel: RepositoryViewModel
@@ -77,13 +83,24 @@ class RepositoryFragment : BaseFragment(RepositoryFragment::class.toString()) {
             recyclerView.adapter = adapter
 
             viewModel = ViewModelProvider(this, DefaultViewModelFactory()).get(RepositoryViewModel::class.java)
+
+            val bundle = arguments
+            if(bundle != null) {
+                val isTest = bundle.getBoolean(RepositoryActivity.IS_TEST, false)
+                if(!isTest) initializeViewModel()
+            }
+        }
+    }
+
+    private fun initializeViewModel() {
+        activity?.runOnUiThread(Runnable {
             viewModel.repositories.observe(viewLifecycleOwner, Observer {
-               if(it.size > 0) {
-                   adapter.items = it
-                   adapter.notifyDataSetChanged()
-                   page++
-                   loading = false
-               }
+                if(it.size > 0) {
+                    adapter.items = it
+                    adapter.notifyDataSetChanged()
+                    page++
+                    loading = false
+                }
                 if(progressBarBottom.visibility != View.GONE) progressBarBottom.visibility = View.GONE
                 if(progressBarCenter.visibility != View.GONE) progressBarCenter.visibility = View.GONE
                 setIdle(true)
@@ -91,12 +108,19 @@ class RepositoryFragment : BaseFragment(RepositoryFragment::class.toString()) {
             viewModel.error.observe(viewLifecycleOwner, Observer {
                 Toast.makeText(context, R.string.error_message_toast, Toast.LENGTH_LONG).show()
             })
+
             viewModel.loadRepositories(page)
-        }
+        })
     }
 
     override fun onDestroy() {
         viewModel.destroy()
         super.onDestroy()
+    }
+
+    @TestOnly
+    fun setViewModel(viewModel: RepositoryViewModel) {
+        this.viewModel = viewModel
+        initializeViewModel()
     }
 }

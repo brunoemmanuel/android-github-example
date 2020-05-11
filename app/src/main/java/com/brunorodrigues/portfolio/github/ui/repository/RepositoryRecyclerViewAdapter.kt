@@ -32,7 +32,7 @@ class RepositoryRecyclerViewAdapter(context: Context?) : RecyclerView.Adapter<Re
 
         if(repository != null) {
             val user = repository.owner
-            if(user != null) {
+            if(user != null && user.avatarUrl != "") {
                 Picasso.get().load(user.avatarUrl).into(holder.userImage)
                 holder.userName.text = user.login
             }

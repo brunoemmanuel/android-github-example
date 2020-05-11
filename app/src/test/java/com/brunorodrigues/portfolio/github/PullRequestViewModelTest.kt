@@ -19,14 +19,16 @@ import org.junit.Assert.assertTrue
 
 import com.brunorodrigues.portfolio.github.api.Client
 import com.brunorodrigues.portfolio.github.data.PullRequest
-import com.brunorodrigues.portfolio.github.data.User
 import com.brunorodrigues.portfolio.github.ui.pullrequest.PullRequestViewModel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
 import retrofit2.HttpException
-import java.util.*
+import java.io.InputStreamReader
 import kotlin.collections.ArrayList
 
 class PullRequestViewModelTest {
@@ -46,7 +48,14 @@ class PullRequestViewModelTest {
 
     private lateinit var lifeCycle: Lifecycle
     private lateinit var viewModel: PullRequestViewModel
-    private val items = ArrayList<PullRequest>(listOf(PullRequest(user = User(), createdAt = Date()), PullRequest(user = User(), createdAt = Date())))
+    private var response: ArrayList<PullRequest>
+
+    init {
+        val inputStream = javaClass.classLoader?.getResourceAsStream("mock_pull_request_response.json")
+        val reader = JsonReader(InputStreamReader(inputStream))
+        val myType = object : TypeToken<ArrayList<PullRequest>>() {}.type
+        response = Gson().fromJson(reader, myType)
+    }
 
     @Before
     fun setUp() {
@@ -67,9 +76,9 @@ class PullRequestViewModelTest {
 
     @Test
     fun testApiLoadSuccess() = runBlockingTest {
-        `when`( client.getPullRequests("", "", 1) ).thenReturn(items)
+        `when`( client.getPullRequests("", "", 1) ).thenReturn(response)
         viewModel.loadPullRequests("", "", 1)
-        verify(observerPullRequests).onChanged(items)
+        verify(observerPullRequests).onChanged(response)
     }
 
     @Test

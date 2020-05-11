@@ -7,7 +7,7 @@ import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class Client() {
+open class Client() {
     private var service: Service
 
     init {
@@ -21,7 +21,7 @@ class Client() {
         service = retrofit.create(Service::class.java)
     }
 
-    suspend fun getRepositories(page: Int) = service.getRepositories(page)
+    open suspend fun getRepositories(page: Int) = service?.getRepositories(page)
 
-    suspend fun getPullRequests(userName: String, repositoryName: String, page: Int) = service.getPullRequests(userName, repositoryName, page)
+    open suspend fun getPullRequests(userName: String, repositoryName: String, page: Int) = service?.getPullRequests(userName, repositoryName, page)
 }
