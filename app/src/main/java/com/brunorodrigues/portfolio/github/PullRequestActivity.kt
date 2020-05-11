@@ -27,7 +27,7 @@ class PullRequestActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             intent.extras?.let { PullRequestFragment.newInstance(it) }?.let {
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, it)
+                    .replace(R.id.container, it, PullRequestFragment::class.toString())
                     .commitNow()
             }
         }

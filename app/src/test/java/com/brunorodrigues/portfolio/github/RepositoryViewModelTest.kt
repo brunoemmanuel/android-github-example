@@ -27,7 +27,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
 import retrofit2.HttpException
-import java.util.*
 import kotlin.collections.ArrayList
 
 class RepositoryViewModelTest {
